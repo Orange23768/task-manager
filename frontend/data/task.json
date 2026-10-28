@@ -1,0 +1,55 @@
+const http = require("http");
+
+let nextId = 4;
+let tasks = [
+  { id: 1, title: "Przygotować makietę", description: "Ekran listy i formularza", status: "done", author: "anna" },
+  { id: 2, title: "Utworzyć tabele", description: "Users, Tasks, Comments", status: "in_progress", author: "anna" },
+  { id: 3, title: "Napisać README", description: null, status: "new", author: "piotr" },
+];
+const STATUSES = ["new", "in_progress", "done"];
+
+function send(res, status, body) {
+  res.writeHead(status, {
+    "Content-Type": "application/json; charset=utf-8",
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type",
+  });
+  res.end(body === undefined ? "" : JSON.stringify(body));
+}
+
+http.createServer((req, res) => {
+  if (req.method === "OPTIONS") return send(res, 204);
+  const match = req.url.match(/^\/api\/tasks(?:\/(\d+))?$/);
+  if (!match) return send(res, 404, { error: "Nie znaleziono" });
+  const id = match[1] ? Number(match[1]) : null;
+
+  let raw = "";
+  req.on("data", (c) => (raw += c));
+  req.on("end", () => {
+    let data = {};
+    try { data = raw ? JSON.parse(raw) : {}; } catch { return send(res, 400, { error: "Niepoprawny JSON" }); }
+
+    if (req.method === "GET" && id === null) return send(res, 200, tasks);
+    const task = tasks.find((t) => t.id === id);
+
+    if (req.method === "POST" && id === null) {
+      if (!data.title || !data.title.trim()) return send(res, 400, { error: "Tytuł jest wymagany." });
+      const created = { id: nextId++, title: data.title.trim(), description: data.description || null, status: STATUSES.includes(data.status) ? data.status : "new", author: "anna" };
+      tasks.push(created);
+      return send(res, 201, created);
+    }
+    if (!task) return send(res, 404, { error: "Nie znaleziono zadania." });
+    if (req.method === "GET") return send(res, 200, task);
+    if (req.method === "PUT") {
+      if (data.status && !STATUSES.includes(data.status)) return send(res, 400, { error: "Niepoprawny status." });
+      Object.assign(task, data);
+      return send(res, 200, task);
+    }
+    if (req.method === "DELETE") {
+      tasks = tasks.filter((t) => t.id !== id);
+      return send(res, 204);
+    }
+    send(res, 405, { error: "Metoda niedozwolona" });
+  });
+}).listen(5000, () => console.log("Mock API: http://localhost:5000/api/tasks"));
