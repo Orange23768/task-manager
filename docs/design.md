@@ -1,7 +1,7 @@
-Czcionka
-- https://fonts.google.com/share?selection.family=Sancreek
-Paleta kolorów
-- #f7f4eb
-- #e2e6bf
-- #c4d494
+# Czcionka
+- font-family: "Climate Crisis", sans-serif
+# Paleta kolorów
+- #F7DE3A
+- #163f72
+- #5DD62C
 - #94d4b2
