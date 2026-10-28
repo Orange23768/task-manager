@@ -1,6 +1,6 @@
-1 Czcionka
-- font-family: "Climate Crisis", sans-serif
-2 Paleta kolorów
+# Czcionka
+- font-family: "Climate Crisis", sans-serif.
+# Paleta kolorów
 - #F7DE3A
 - #163f72
 - #5DD62C
