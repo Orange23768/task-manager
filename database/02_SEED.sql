@@ -3,7 +3,7 @@ INSERT INTO users (login, email, password, role, created_at) VALUES
 ('anna', 'anna@example.com', 'hash-placeholder-2', 'user', NOW()),
 ('piotr', 'piotr@example.com', 'hash-placeholder-3', 'user', NOW()),
 ('kasia', 'kasia@example.com', 'hash-placeholder-4', 'user', NOW()),
-('marek', 'marek@example.com', 'hash-placeholder-5', 'user', NOW());
+('pavel', 'pavel@example.com', 'hash-placeholder-5', 'user', NOW());
 
 INSERT INTO tasks (title, description, status, users_id) VALUES
 ('Przygotować makietę', 'Ekran listy i formularza', 'done', 2),
