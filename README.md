@@ -11,7 +11,7 @@
 ### -Brak kontroli – daje jasny podgląd postępów i ułatwia zarządzanie czasem. 
 ## Cel projektu 
 Opisz, czego nauczycie się podczas realizacji projektu. 
-## Funkcjonalności - dodawanie zadań, - edycja zadań, - zmiana statusu, - wyszukiwanie i filtrowanie. 
+## Funkcjonalności - dodawanie zadań, - edycja zadań, - zmiana statusu. 
 ## Technologie - frontend: ... - backend: ... - baza danych: PostgreSQL 
 ## Struktura projektu 
 ```text 
