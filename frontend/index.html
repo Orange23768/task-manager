@@ -8,50 +8,53 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Sancreek&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-    
 </head>
+<body>
+
 <header>
     <h1>Task-manager</h1>
-    
 </header>
 
 <aside>
-        <div class="column">
-                <h2>Nowe <span id="count-new" class="count">(0)</span></h2>
-                <hr>
-                <div id="col-new" class="cards-list"></div>
-            </div>
+    <div class="column">
+        <h2>Nowe <span id="count-new" class="count">(0)</span></h2>
+        <hr>
+        <div id="col-new" class="cards-list"></div>
+    </div>
 
-            <div class="column">
-                <h2>W trakcie <span id="count-in_progress" class="count">(0)</span></h2>
-                <hr>
-                <div id="col-in_progress" class="cards-list"></div>
-            </div>
+    <div class="column">
+        <h2>W trakcie <span id="count-in_progress" class="count">(0)</span></h2>
+        <hr>
+        <div id="col-in_progress" class="cards-list"></div>
+    </div>
 
-            <div class="column">
-                <h2>Gotowe <span id="count-done" class="count">(0)</span></h2>
-                <hr>
-                <div id="col-done" class="cards-list"></div>
-            </div>
+    <div class="column">
+        <h2>Gotowe <span id="count-done" class="count">(0)</span></h2>
+        <hr>
+        <div id="col-done" class="cards-list"></div>
+    </div>
 </aside>
+
 <section>
     <form id="task-form" action="task-manager">
-        <label for="tytuł">Tytuł:</label><br>
+        <label for="tytul">Tytuł:</label><br>
         <input required type="text" id="tytul"><br>
- 
+
         <label for="opis">Opis:</label>
         <textarea id="opis"></textarea><br>
- 
+
         <label for="status">Status:</label>
         <select required id="status">
             <option value="new">Nowe</option>
             <option value="in_progress">W trakcie</option>
             <option value="done">Gotowe</option>
         </select><br><br>
- 
-        <center><button type="submit">Dodaj</button></center>
+
+        <button type="submit">Dodaj</button>
     </form>
 </section>
+
 <footer></footer>
 <script src="app.js"></script>
+</body>
 </html>
