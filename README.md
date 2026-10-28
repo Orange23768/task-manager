@@ -4,12 +4,12 @@
 
 ### -Rozwiązuje problemy takie jak:
 
-### -Chaos i zapominanie 
-### – gromadzi wszystkie sprawy i terminy w jednym miejscu.
-
-### -Przytłoczenie pracą – pomaga ustalać priorytety i dzielić duże projekty na mniejsze kroki.
-
-### -Brak kontroli – daje jasny podgląd postępów i ułatwia zarządzanie czasem. 
+### - Chaos i zapominanie 
+### – Gromadzi wszystkie sprawy i terminy w jednym miejscu.
+### - Przytłoczenie pracą
+### – Pomaga ustalać priorytety i dzielić duże projekty na mniejsze kroki.
+### - Brak kontroli
+### – Daje jasny podgląd postępów i ułatwia zarządzanie czasem. 
 ## Cel projektu 
 Umożliwienie użytkownikowi szybkiego dodawania, edycji, zmiany statusu oraz usuwania zadań
 Zapewnienie przejrzystego podglądu postępu prac dzięki trzem statusom zadań (Nowe, W trakcie, Gotowe)
