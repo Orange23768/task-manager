@@ -1,1 +1,130 @@
+*{ font-family: "Climate Crisis", sans-serif;
+    font-weight: 1000;
 
+}
+header{
+    text-align: center;
+    background-color: #F7DE3A;
+}
+/*część pola o stylu task-manager*/
+form {
+    border-radius: 20px;
+    padding: 10px;
+    height: 600px;
+    width: 600px;
+    background-color: #F7DE3A;
+    color: #000000;
+    text-align: center;
+    float: left;
+    font-size: 22px;
+    font-weight: bold;
+}
+ 
+input {
+    width: 50%;
+    padding: 10px;
+    border-radius: 10px;
+    font-size: 16px;
+    box-sizing: border-box;
+}
+ 
+textarea {
+    width: 100%;
+    height: 300px;
+    padding: 10px;
+    border-radius: 10px;
+    font-size: 16px;
+    resize: vertical;
+    box-sizing: border-box;
+    font-weight: bold;
+}
+ 
+select{
+    font-size: 16px;
+}
+ 
+button{
+    background-color:  #94d4b2;
+    color: #000000;
+    font-size: 22px;
+    font-weight: bold;
+}
+/*część pola o stylu task-manager*/
+
+/*część pola o stylu kolumn do tasks*/
+.column {
+    flex: 1;
+    background-color: #163f72; /**/
+    padding: 15px;
+    border-radius: 10px;
+    height: 600px;
+    width: 250px;
+    float: right;
+    margin-right: 10px;
+    overflow-y: auto;
+    
+    
+}
+.column h2 {
+    color: #5DD62C;
+    font-size: 22px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.column h2 .count {
+    color: #FFFFFF;
+    font-size: 18px;
+}
+hr {
+    border: none;
+    border-top: 1px solid #FFFFFF;
+    margin: 10px 0 15px 0;
+}
+.cards-list {
+    min-height: 200px;
+}
+.card {
+    background-color: #2D2D2D;
+    padding: 12px;
+    border-radius: 10px;
+    margin-bottom: 12px;
+    position: relative;
+}
+.card-date {
+    font-size: 13px;
+    font-weight: bold;
+    margin-bottom: 4px;
+    color:#FFFFFF
+}
+.card-title {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 6px;
+    color:#FFFFFF;
+    overflow-wrap: break-word;
+}
+.card-desc {
+    font-size: 14px;
+    color: #CCCCCC;
+    overflow-wrap: break-word;
+}
+.card-actions {
+    margin-top: 10px;
+    display: flex;
+    gap: 8px;
+}
+.card-actions button {
+    background-color: #5DD62C;
+    border: none;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    font-weight: bold;
+}
+.card-actions button.delete-btn {
+    background-color: #ff4d4d;
+    color: white;
+}
+/*część pola o stylu kolumn do tasks*/
