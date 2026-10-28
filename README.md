@@ -4,14 +4,20 @@
 
 ### -Rozwiązuje problemy takie jak:
 
-### -Chaos i zapominanie – gromadzi wszystkie sprawy i terminy w jednym miejscu.
+### -Chaos i zapominanie 
+### – gromadzi wszystkie sprawy i terminy w jednym miejscu.
 
 ### -Przytłoczenie pracą – pomaga ustalać priorytety i dzielić duże projekty na mniejsze kroki.
 
 ### -Brak kontroli – daje jasny podgląd postępów i ułatwia zarządzanie czasem. 
 ## Cel projektu 
-Opisz, czego nauczycie się podczas realizacji projektu. 
-## Funkcjonalności - dodawanie zadań, - edycja zadań, - zmiana statusu, - wyszukiwanie i filtrowanie. 
+Umożliwienie użytkownikowi szybkiego dodawania, edycji, zmiany statusu oraz usuwania zadań
+Zapewnienie przejrzystego podglądu postępu prac dzięki trzem statusom zadań (Nowe, W trakcie, Gotowe)
+## Funkcjonalności 
+- dodawanie zadań,
+- edycja zadań,
+- zmiana statusu,
+- usuwanie zadań
 ## Technologie - frontend: ... - backend: ... - baza danych: PostgreSQL 
 ## Struktura projektu 
 ```text 
