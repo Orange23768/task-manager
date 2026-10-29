@@ -1,172 +1,218 @@
-const API_URL = "http://localhost:5000/api/tasks";
-const form = document.getElementById("task-form");
+const API_URL = "http://localhost:5113/api/tasks";
+let tasks = [];
 
-// Function to update task counters in column headers
-function updateCounters() {
-    document.getElementById("count-new").textContent = `(${document.getElementById("col-new").children.length})`;
-    document.getElementById("count-in_progress").textContent = `(${document.getElementById("col-in_progress").children.length})`;
-    document.getElementById("count-done").textContent = `(${document.getElementById("col-done").children.length})`;
+// error/success
+function showMessage(text, isError = false) {
+    const box = document.getElementById("message-box");
+    if (!box) return;
+    box.textContent = text;
+    box.style.display = "block";
+    box.style.backgroundColor = isError ? "#ff4d4d" : "#5DD62C";
+    box.style.color = isError ? "#ffffff" : "#000000";
 }
 
-// Function to create and insert a task card into the correct column
-function createCardElement(taskData) {
-    const { id, title, description, status, author } = taskData;
-    const card = document.createElement("div");
-    card.classList.add("card");
-    card.setAttribute("data-id", id);
-    card.setAttribute("data-status", status);
-
-    const currentDate = new Date().toLocaleDateString();
-
-    card.innerHTML = `
-        <div class="card-date">${currentDate}</div>
-        <div class="card-title">${escapeHTML(title)}</div>
-        <div class="card-desc">${escapeHTML(description || "")}</div>
-        <div class="card-actions">
-            <button class="edit-btn" type="button">Edytuj</button>
-            <button class="delete-btn" type="button">Usuń</button>
-        </div>
-    `;
-
-    // Edit button functionality
-    const editBtn = card.querySelector(".edit-btn");
-    const titleDiv = card.querySelector(".card-title");
-    const descDiv = card.querySelector(".card-desc");
-
-    editBtn.addEventListener("click", async () => {
-        if (editBtn.textContent === "Edytuj") {
-            const currentStatus = card.getAttribute("data-status");
-
-            titleDiv.innerHTML = `<input type="text" class="edit-title-input" value="${escapeHTML(titleDiv.textContent)}" style="width: 100%; font-size: 14px; padding: 4px; box-sizing: border-box;">`;
-            
-            descDiv.innerHTML = `
-                <textarea class="edit-desc-input" style="width: 100%; height: 60px; font-size: 13px; padding: 4px; box-sizing: border-box; margin-bottom: 8px;">${escapeHTML(descDiv.textContent)}</textarea>
-                <div class="edit-status-container">
-                    <label style="font-size: 12px; color: #fff;">Status: </label>
-                    <select class="edit-status-select" style="font-size: 12px; padding: 2px;">
-                        <option value="new" ${currentStatus === "new" ? "selected" : ""}>Nowe</option>
-                        <option value="in_progress" ${currentStatus === "in_progress" ? "selected" : ""}>W trakcie</option>
-                        <option value="done" ${currentStatus === "done" ? "selected" : ""}>Gotowe</option>
-                    </select>
-                </div>
-            `;
-
-            editBtn.textContent = "Zapisz";
-        } else {
-            const newTitle = card.querySelector(".edit-title-input").value;
-            const newDesc = card.querySelector(".edit-desc-input").value;
-            const newStatus = card.querySelector(".edit-status-select").value;
-
-            try {
-                const response = await fetch(`${API_URL}/${id}`, {
-                    method: "PUT",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ title: newTitle, description: newDesc, status: newStatus })
-                });
-
-                if (!response.ok) throw new Error("Błąd podczas aktualizacji zadania");
-                const updatedTask = await response.json();
-
-                titleDiv.textContent = updatedTask.title;
-                descDiv.textContent = updatedTask.description || "";
-                
-                if (updatedTask.status !== card.getAttribute("data-status")) {
-                    card.setAttribute("data-status", updatedTask.status);
-                    const targetColumn = document.getElementById(`col-${updatedTask.status}`);
-                    if (targetColumn) {
-                        targetColumn.appendChild(card);
-                    }
-                }
-
-                editBtn.textContent = "Edytuj";
-                updateCounters();
-            } catch (error) {
-                console.error(error);
-                alert("Nie udało się zaktualizować zadania na serwerze.");
-            }
-        }
-    });
-
-    // Delete button functionality
-    card.querySelector(".delete-btn").addEventListener("click", async () => {
-        try {
-            const response = await fetch(`${API_URL}/${id}`, {
-                method: "DELETE"
-            });
-
-            if (!response.ok && response.status !== 204) throw new Error("Błąd podczas usuwania");
-
-            card.remove();
-            updateCounters();
-        } catch (error) {
-            console.error(error);
-            alert("Nie udało się usunąć zadania z serwera.");
-        }
-    });
-
-    // Append card to correct column container
-    const targetColumn = document.getElementById(`col-${status}`);
-    if (targetColumn) {
-        targetColumn.appendChild(card);
+async function request(url, options = {}) {
+    let response;
+    try {
+        response = await fetch(url, {
+            headers: { "Content-Type": "application/json" },
+            ...options,
+        });
+    } catch {
+        throw new Error("Brak połączenia z serwerem. Sprawdź, czy API działa.");
     }
+
+    if (!response.ok) {
+        const body = await response.json().catch(() => ({}));
+        throw new Error(body.error || `Błąd serwera (${response.status})`);
+    }
+
+    if (response.status === 204) {
+        return null;
+    }
+    return response.json();
 }
 
-// Load tasks from backend API when opening the page
+// GET
 async function loadTasks() {
     try {
-        // Clear columns first to prevent duplication
-        document.getElementById("col-new").innerHTML = "";
-        document.getElementById("col-in_progress").innerHTML = "";
-        document.getElementById("col-done").innerHTML = "";
-
-        const response = await fetch(API_URL);
-        if (!response.ok) throw new Error("Nie udało się pobrać zadań");
-        
-        const tasks = await response.json();
-        tasks.forEach(task => {
-            createCardElement(task);
-        });
-        updateCounters();
+        tasks = await request(API_URL);
+        renderBoard();
     } catch (error) {
-        console.error(error);
-        alert("Nie można połączyć się z API. Upewnij się, że serwer Node.js działa na porcie 5000.");
+        showMessage(error.message, true);
     }
 }
 
-// Handle form submission
-form.addEventListener("submit", async (event) => {
-    event.preventDefault(); // Prevent page reload
+// textContent & Render
+function renderBoard() {
+    const colNew = document.getElementById("col-new");
+    const colInProgress = document.getElementById("col-in_progress");
+    const colDone = document.getElementById("col-done");
 
-    const title = document.getElementById("tytul").value;
-    const description = document.getElementById("opis").value;
-    const status = document.getElementById("status").value;
+    if (!colNew || !colInProgress || !colDone) return;
+
+    colNew.innerHTML = "";
+    colInProgress.innerHTML = "";
+    colDone.innerHTML = "";
+
+    let counts = { new: 0, in_progress: 0, done: 0 };
+
+    tasks.forEach(task => {
+        counts[task.status] = (counts[task.status] || 0) + 1;
+
+        const card = document.createElement("div");
+        card.className = "card";
+
+        const titleDiv = document.createElement("div");
+        titleDiv.className = "card-title";
+        titleDiv.textContent = task.title; // Защита от XSS
+
+        const descText = task.description && task.description.trim() !== "" 
+            ? task.description 
+            : "brak opisu";
+            
+        const descDiv = document.createElement("div");
+        descDiv.className = "card-desc";
+        descDiv.textContent = "● " + descText; // Защита от XSS
+
+        const actionsDiv = document.createElement("div");
+        actionsDiv.className = "card-actions";
+
+        // Кнопка редактирования (Edytuj)
+        const editBtn = document.createElement("button");
+        editBtn.textContent = "Edytuj";
+        editBtn.style.backgroundColor = "#1f6feb";
+        editBtn.style.color = "white";
+        editBtn.onclick = () => editTask(task.id);
+        actionsDiv.appendChild(editBtn);
+
+        // done/in_progress-button
+        if (task.status !== "done") {
+            const doneBtn = document.createElement("button");
+            doneBtn.textContent = "Zakończ";
+            doneBtn.onclick = () => updateTaskStatus(task.id, "done");
+            actionsDiv.appendChild(doneBtn);
+        }
+
+        // del-button
+        const deleteBtn = document.createElement("button");
+        deleteBtn.className = "delete-btn";
+        deleteBtn.textContent = "Usuń";
+        deleteBtn.onclick = () => deleteTask(task.id);
+        actionsDiv.appendChild(deleteBtn);
+
+        card.appendChild(titleDiv);
+        card.appendChild(descDiv);
+        card.appendChild(actionsDiv);
+
+        if (task.status === "new") colNew.appendChild(card);
+        else if (task.status === "in_progress") colInProgress.appendChild(card);
+        else if (task.status === "done") colDone.appendChild(card);
+    });
+
+    document.getElementById("count-new").textContent = `(${counts.new || 0})`;
+    document.getElementById("count-in_progress").textContent = `(${counts.in_progress || 0})`;
+    document.getElementById("count-done").textContent = `(${counts.done || 0})`;
+}
+
+// POST (Добавление задачи с userId: 2 для C# бэкенда)
+document.getElementById("task-form").addEventListener("submit", async function(e) {
+    e.preventDefault();
+
+    const titleInput = document.getElementById("title");
+    const descInput = document.getElementById("opis");
+    const statusSelect = document.getElementById("status");
+
+    const data = {
+        title: titleInput.value.trim(),
+        description: descInput.value.trim() || null,
+        status: statusSelect.value,
+        userId: 2 
+    };
+
+    if (!data.title) {
+        showMessage("Tytuł jest wymagany.", true);
+        return;
+    }
 
     try {
-        const response = await fetch(API_URL, {
+        const created = await request(API_URL, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ title, description, status })
+            body: JSON.stringify(data)
         });
-
-        if (!response.ok) throw new Error("Błąd podczas tworzenia zadania");
-        const newTask = await response.json();
-
-        createCardElement(newTask);
-        updateCounters();
-        form.reset();
+        showMessage(`Dodano zadanie "${created.title}".`);
+        this.reset();
+        await loadTasks();
     } catch (error) {
-        console.error(error);
-        alert("Nie udało się dodać zadania do serwera.");
+        showMessage(error.message, true);
     }
 });
 
-// Security helper to prevent HTML injection
-function escapeHTML(str) {
-    if (!str) return "";
-    return str.replace(/[&<>'"]/g, 
-        tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
-    );
+// EDIT (Редактирование задачи)
+async function editTask(id) {
+    const task = tasks.find(t => t.id === id);
+    if (!task) return;
+
+    const newTitle = prompt("Nowy tytuł:", task.title);
+    if (newTitle === null) return; // Если нажали "Отмена"
+
+    if (!newTitle.trim()) {
+        showMessage("Tytuł jest wymagany.", true);
+        return;
+    }
+
+    const newDesc = prompt("Nowy opis:", task.description || "");
+    if (newDesc === null) return;
+
+    try {
+        await request(`${API_URL}/${id}`, {
+            method: "PUT",
+            body: JSON.stringify({
+                title: newTitle.trim(),
+                description: newDesc.trim() || null,
+                status: task.status,
+                userId: task.userId || 2
+            })
+        });
+        showMessage("Zaktualizowano zadanie.");
+        await loadTasks();
+    } catch (error) {
+        showMessage(error.message, true);
+    }
 }
 
-// Run on startup
-loadTasks();
+// PUT (Обновление только статуса)
+async function updateTaskStatus(id, newStatus) {
+    try {
+        const task = tasks.find(t => t.id === id);
+        await request(`${API_URL}/${id}`, {
+            method: "PUT",
+            body: JSON.stringify({
+                title: task.title,
+                description: task.description,
+                status: newStatus,
+                userId: task.userId || 2
+            })
+        });
+        showMessage("Zaktualizowano status zadania.");
+        await loadTasks();
+    } catch (error) {
+        showMessage(error.message, true);
+    }
+}
+
+// DELETE
+async function deleteTask(id) {
+    if (!confirm("Na pewno usunąć zadanie?")) return;
+    try {
+        await request(`${API_URL}/${id}`, {
+            method: "DELETE"
+        });
+        showMessage("Usunięto zadanie.");
+        await loadTasks();
+    } catch (error) {
+        showMessage(error.message, true);
+    }
+}
+
+window.addEventListener("DOMContentLoaded", loadTasks);
